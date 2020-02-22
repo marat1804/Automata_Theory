@@ -19,7 +19,7 @@ class Generator:
         self._f.close()
         self._f = open('addresses.txt', 'w')
         for i in range(self._num):
-            address = self.mailto()+' '+self.name()+self.dogSign()+self.generateString()+self.dot() + \
+            address = self.mailto()+self.name()+self.dogSign()+self.generateString()+self.dot() + \
                       self.generateString() + self.text()+'\n'
             self._f.write(address)
 
@@ -42,7 +42,7 @@ class Generator:
     def name(self):
         name = ['n', 'a', 'm', 'e']
         random.shuffle(name)
-        return ''.join(name)+''.join(random.choices(string.digits, k=random.randint(-5,5)))
+        return ''.join(name)+''.join(random.choices(string.digits, k=random.randint(-5,6)))
 
     def dogSign(self):
         if self.rand() > 0.4:
@@ -71,13 +71,14 @@ class Generator:
     def getFileContent(self):
         add = self._f.read()
         add = add.split('\n')
-        del add[1000000]
+        del add[self._num]
         return add
 
 
 if __name__ == '__main__':
     gen = Generator()
-    #gen.generateFile()
+    gen.generateFile()
+    '''
     add = gen.getFileContent()
     a = []
     for i in range(len(add)):
@@ -89,6 +90,7 @@ if __name__ == '__main__':
     for items, count in counter.items():
         if count >1:
             print(items, count)
+            '''
     '''
     f = open('addresses.txt', 'r')
     add = f.read()
