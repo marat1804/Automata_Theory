@@ -1,0 +1,60 @@
+// -*- tab-width: 4; -*-
+
+%start Map1::MailTo
+%class AppClass
+
+%map Map1
+%%
+// State		Transition		End State		Action(s)
+MailTo {
+				Letter			nil 			{Memorise();}
+				Colom			NameTo			{}
+}
+
+NameTo {
+				Letter			nil 			{MemName();}
+				Digit           nil             {MemName();}
+				At              ServerName      {}
+}
+
+ServerName {
+                Letter          nil             {}
+                Dot             Zone            {}
+}
+
+Zone {
+                Letter          nil             {}
+                Digit           Error           {Unacceptable();}
+                Question        Subject         {}
+                EOS             OK              {Acceptable();}
+}
+
+Subject {
+                Letter          nil             {}
+                Eq              Text            {}
+}
+
+Text {
+                Letter          nil             {}
+                Digit           nil             {}
+                EOS             OK              {Acceptable();}
+}
+
+OK {}
+
+Error {}
+
+Default {
+				Letter			Error      		{Unacceptable();}
+				Digit			Error 			{Unacceptable();}
+				Colom			Error			{Unacceptable();}
+				At              Error			{Unacceptable();}
+				Dot             Error           {Unacceptable();}
+				Question        Error           {Unacceptable();}
+			    Eq              Error           {Unacceptable();}
+			    Unknown         Error           {Unacceptable();}
+			    EOS             Error           {Unacceptable();}
+			    enterStartState MailTo          {ClearSMC();}
+}
+
+%%

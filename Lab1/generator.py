@@ -33,9 +33,21 @@ class Generator:
         else:
             return ''.join(random.choices(string.digits, k=letters))
 
+    def upper(self, string):
+        if self.rand() > 0.5:
+            return string
+        else:
+            a = []
+            for i in range(len(string)):
+                a.append(string[i])
+            for i in range(random.randint(0,len(a))):
+                j=random.randint(0,len(a)-1)
+                a[j]=a[j].upper()
+            return ''.join(a)
+
     def mailto(self):
         if self.rand() > 0.4:
-            return 'mailto:'
+            return self.upper('mailto:')
         else:
             return ''
 
@@ -61,7 +73,7 @@ class Generator:
         if len(text) != 0:
             r = self.rand()
             if r > 0.3:
-                text = '?subject='+text
+                text = self.upper('?subject=')+text
                 return text
             else:
                 return text
