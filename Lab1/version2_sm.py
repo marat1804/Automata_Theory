@@ -20,7 +20,7 @@ class AppClassState(statemap.State):
     def Colom(self, fsm):
         self.Default(fsm)
 
-    def Digit(self, fsm):
+    def Digit(self, fsm, letter):
         self.Default(fsm)
 
     def Dot(self, fsm):
@@ -32,16 +32,16 @@ class AppClassState(statemap.State):
     def Eq(self, fsm):
         self.Default(fsm)
 
-    def Letter(self, fsm):
+    def Letter(self, fsm, letter):
+        self.Default(fsm)
+
+    def MailTo(self, fsm):
         self.Default(fsm)
 
     def Question(self, fsm):
         self.Default(fsm)
 
     def Unknown(self, fsm):
-        self.Default(fsm)
-
-    def enterStartState(self, fsm):
         self.Default(fsm)
 
     def Default(self, fsm):
@@ -51,7 +51,7 @@ class AppClassState(statemap.State):
 
 class Map1_Default(AppClassState):
 
-    def Letter(self, fsm):
+    def Letter(self, fsm, letter):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -62,7 +62,7 @@ class Map1_Default(AppClassState):
             fsm.getState().Entry(fsm)
 
 
-    def Digit(self, fsm):
+    def Digit(self, fsm, letter):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -150,7 +150,7 @@ class Map1_Default(AppClassState):
             fsm.getState().Entry(fsm)
 
 
-    def enterStartState(self, fsm):
+    def MailTo(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -164,63 +164,116 @@ class Map1_Default(AppClassState):
 class Map1_MailTo(Map1_Default):
 
     def Colom(self, fsm):
-        fsm.getState().Exit(fsm)
-        fsm.setState(Map1.NameTo)
-        fsm.getState().Entry(fsm)
-
-
-    def Letter(self, fsm):
         ctxt = fsm.getOwner()
-        endState = fsm.getState()
-        fsm.clearState()
-        try:
-            ctxt.Memorise()
-        finally:
-            fsm.setState(endState)
+        if ctxt.checkMail() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.counterZero()
+            finally:
+                fsm.setState(Map1.NameTo)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.Colom(self, fsm)
+        
+    def Letter(self, fsm, letter):
+        ctxt = fsm.getOwner()
+        if ctxt.lenMailTo() :
+            endState = fsm.getState()
+            fsm.clearState()
+            try:
+                ctxt.Memorise(letter)
+                ctxt.counterInc()
+            finally:
+                fsm.setState(endState)
+        else:
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.Unacceptable()
+            finally:
+                fsm.setState(Map1.Error)
+                fsm.getState().Entry(fsm)
 
 
 class Map1_NameTo(Map1_Default):
 
     def At(self, fsm):
-        fsm.getState().Exit(fsm)
-        fsm.setState(Map1.ServerName)
-        fsm.getState().Entry(fsm)
-
-
-    def Digit(self, fsm):
+        ctxt = fsm.getOwner()
+        if ctxt.nonZero() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.remName()
+                ctxt.counterZero()
+            finally:
+                fsm.setState(Map1.ServerName)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.At(self, fsm)
+        
+    def Digit(self, fsm, letter):
         ctxt = fsm.getOwner()
         endState = fsm.getState()
         fsm.clearState()
         try:
-            ctxt.MemName()
+            ctxt.Memorise(letter)
+            ctxt.counterInc()
         finally:
             fsm.setState(endState)
 
 
-    def Letter(self, fsm):
+    def Letter(self, fsm, letter):
         ctxt = fsm.getOwner()
         endState = fsm.getState()
         fsm.clearState()
         try:
-            ctxt.MemName()
+            ctxt.Memorise(letter)
+            ctxt.counterInc()
         finally:
             fsm.setState(endState)
 
 
 class Map1_ServerName(Map1_Default):
 
-    def Dot(self, fsm):
+    def Digit(self, fsm, letter):
+        ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
-        fsm.setState(Map1.Zone)
-        fsm.getState().Entry(fsm)
+        fsm.clearState()
+        try:
+            ctxt.counterInc()
+        finally:
+            fsm.setState(Map1.ServerName)
+            fsm.getState().Entry(fsm)
 
 
-    def Letter(self, fsm):
+    def Dot(self, fsm):
+        ctxt = fsm.getOwner()
+        if ctxt.nonZero() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.counterZero()
+            finally:
+                fsm.setState(Map1.Zone)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.Dot(self, fsm)
+        
+    def Letter(self, fsm, letter):
+        ctxt = fsm.getOwner()
+        fsm.getState().Exit(fsm)
+        fsm.clearState()
+        try:
+            ctxt.counterInc()
+        finally:
+            fsm.setState(Map1.ServerName)
+            fsm.getState().Entry(fsm)
 
 
 class Map1_Zone(Map1_Default):
 
-    def Digit(self, fsm):
+    def Digit(self, fsm, letter):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -233,52 +286,102 @@ class Map1_Zone(Map1_Default):
 
     def EOS(self, fsm):
         ctxt = fsm.getOwner()
-        fsm.getState().Exit(fsm)
-        fsm.clearState()
-        try:
-            ctxt.Acceptable()
-        finally:
-            fsm.setState(Map1.OK)
-            fsm.getState().Entry(fsm)
-
-
-    def Letter(self, fsm):
-
-
-    def Question(self, fsm):
-        fsm.getState().Exit(fsm)
-        fsm.setState(Map1.Subject)
-        fsm.getState().Entry(fsm)
-
-
-class Map1_Subject(Map1_Default):
-
-    def Eq(self, fsm):
-        fsm.getState().Exit(fsm)
-        fsm.setState(Map1.Text)
-        fsm.getState().Entry(fsm)
-
-
-    def Letter(self, fsm):
-
-
-class Map1_Text(Map1_Default):
-
-    def Digit(self, fsm):
-
-
-    def EOS(self, fsm):
+        if ctxt.nonZero() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.Acceptable()
+            finally:
+                fsm.setState(Map1.OK)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.EOS(self, fsm)
+        
+    def Letter(self, fsm, letter):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
         try:
-            ctxt.Acceptable()
+            ctxt.counterInc()
         finally:
-            fsm.setState(Map1.OK)
+            fsm.setState(Map1.Zone)
             fsm.getState().Entry(fsm)
 
 
-    def Letter(self, fsm):
+    def Question(self, fsm):
+        ctxt = fsm.getOwner()
+        if ctxt.nonZero() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.counterZero()
+            finally:
+                fsm.setState(Map1.Subject)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.Question(self, fsm)
+        
+class Map1_Subject(Map1_Default):
+
+    def Eq(self, fsm):
+        ctxt = fsm.getOwner()
+        if ctxt.checkSubject() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.counterZero()
+            finally:
+                fsm.setState(Map1.Text)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.Eq(self, fsm)
+        
+    def Letter(self, fsm, letter):
+        ctxt = fsm.getOwner()
+        fsm.getState().Exit(fsm)
+        fsm.clearState()
+        try:
+            ctxt.Memorise(letter)
+        finally:
+            fsm.setState(Map1.Subject)
+            fsm.getState().Entry(fsm)
+
+
+class Map1_Text(Map1_Default):
+
+    def Digit(self, fsm, letter):
+        ctxt = fsm.getOwner()
+        fsm.getState().Exit(fsm)
+        fsm.clearState()
+        try:
+            ctxt.counterInc()
+        finally:
+            fsm.setState(Map1.Text)
+            fsm.getState().Entry(fsm)
+
+
+    def EOS(self, fsm):
+        ctxt = fsm.getOwner()
+        if ctxt.lenText() :
+            fsm.getState().Exit(fsm)
+            fsm.clearState()
+            try:
+                ctxt.Acceptable()
+            finally:
+                fsm.setState(Map1.OK)
+                fsm.getState().Entry(fsm)
+        else:
+            Map1_Default.EOS(self, fsm)
+        
+    def Letter(self, fsm, letter):
+        ctxt = fsm.getOwner()
+        fsm.getState().Exit(fsm)
+        fsm.clearState()
+        try:
+            ctxt.counterInc()
+        finally:
+            fsm.setState(Map1.Text)
+            fsm.getState().Entry(fsm)
 
 
 class Map1_OK(Map1_Default):

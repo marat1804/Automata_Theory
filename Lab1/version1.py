@@ -18,7 +18,7 @@ class Recognizer:
         n = time.perf_counter()
         j = 0
         for i in range(len(self.strings)):
-            if re.match(r'[mM][aA][iI][Ll][Tt][Oo]:[a-zA-Z0-9]+@[a-zA-Z0-9]+.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?', self.strings[i]):
+            if re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:[a-zA-Z0-9]+@[a-zA-Z0-9]+[.][a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?', self.strings[i]):
                 self.AddToDict(self.strings[i].split(':')[1].split('@')[0])
                 j += 1
                 self._f.write(self.strings[i] + ' - yes'+'\n')
@@ -52,3 +52,6 @@ if __name__ == '__main__':
     addr = gen.getFileContent()
     rec = Recognizer(addr)
     rec.recognize()
+    #a = 'mailto:mnea29@viju1sp0nIQ9rB4m478eY738qsDPfZdWQr6xwbSWpTc91b7XmxBmkuXf59UDBWYE6iG5AP88MrHmkKi3Cr?sUbJECT=yFFJUqtYrEPfYP'
+    #print(re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:[a-zA-Z0-9]+@[a-zA-Z0-9]+[.][a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?',a))
+    #print(a[:119])

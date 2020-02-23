@@ -7,37 +7,39 @@
 %%
 // State		Transition		End State		Action(s)
 MailTo {
-				Letter			nil 			{Memorise();}
-				Colom			NameTo			{}
+				Letter(letter:string)[ctxt.lenMailTo()]		    nil 			{Memorise(letter); counterInc();}
+				Letter(letter:string)          Error           {Unacceptable();}
+				Colom[ctxt.checkMail()]			NameTo			{counterZero();}
 }
 
 NameTo {
-				Letter			nil 			{MemName();}
-				Digit           nil             {MemName();}
-				At              ServerName      {}
+				Letter(letter:string)			nil 			{Memorise(letter);counterInc();}
+				Digit(letter:string)           nil             {Memorise(letter);counterInc();}
+				At[ctxt.nonZero()]               ServerName      {remName();counterZero();}
 }
 
 ServerName {
-                Letter          nil             {}
-                Dot             Zone            {}
+                Letter(letter:string)          ServerName      {counterInc();}
+                Digit(letter:string)           ServerName      {counterInc();}
+                Dot[ctxt.nonZero()]             Zone            {counterZero();}
 }
 
 Zone {
-                Letter          nil             {}
-                Digit           Error           {Unacceptable();}
-                Question        Subject         {}
-                EOS             OK              {Acceptable();}
+                Letter(letter:string)          Zone            {counterInc();}
+                Digit(letter:string)           Error           {Unacceptable();}
+                Question[ctxt.nonZero()]         Subject         {counterZero();}
+                EOS[ctxt.nonZero()]              OK              {Acceptable();}
 }
 
 Subject {
-                Letter          nil             {}
-                Eq              Text            {}
+                Letter(letter:string)          Subject         {Memorise(letter);}
+                Eq[ctxt.checkSubject()]        Text            {counterZero();}
 }
 
 Text {
-                Letter          nil             {}
-                Digit           nil             {}
-                EOS             OK              {Acceptable();}
+                Letter(letter:string)         Text             {counterInc();}
+                Digit(letter:string)         Text             {counterInc();}
+                EOS[ctxt.lenText()]             OK              {Acceptable();}
 }
 
 OK {}
@@ -45,8 +47,8 @@ OK {}
 Error {}
 
 Default {
-				Letter			Error      		{Unacceptable();}
-				Digit			Error 			{Unacceptable();}
+				Letter(letter:string)   		Error      		{Unacceptable();}
+				Digit(letter:string)   			Error 			{Unacceptable();}
 				Colom			Error			{Unacceptable();}
 				At              Error			{Unacceptable();}
 				Dot             Error           {Unacceptable();}
@@ -54,7 +56,7 @@ Default {
 			    Eq              Error           {Unacceptable();}
 			    Unknown         Error           {Unacceptable();}
 			    EOS             Error           {Unacceptable();}
-			    enterStartState MailTo          {ClearSMC();}
+			    MailTo          MailTo          {ClearSMC();}
 }
 
 %%
