@@ -1,13 +1,13 @@
 import random
 import string
-from collections import Counter
+import os
 
 
 class Generator:
 
     def __init__(self, num=1000000):
         self._num = num
-        self._f = open('addresses.txt', 'r')
+        self._f = open(os.path.join(os.getcwd(),'Mails',"addresses.txt"), 'r')
 
     def rand(self):
         return random.random()
@@ -17,7 +17,7 @@ class Generator:
 
     def generateFile(self):
         self._f.close()
-        self._f = open('addresses.txt', 'w')
+        self._f = open(os.path.join(os.getcwd(),'Mails',"addresses.txt"), 'w')
         for i in range(self._num):
             address = self.mailto()+self.name()+self.dogSign()+self.generateString()+self.dot() + \
                       self.generateString() + self.text()+'\n'
@@ -88,8 +88,8 @@ class Generator:
 
 
 if __name__ == '__main__':
-    gen = Generator()
-    gen.generateFile()
+    #gen = Generator()
+    #gen.generateFile()
     '''
     add = gen.getFileContent()
     a = []

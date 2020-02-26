@@ -1,7 +1,8 @@
-import version2_sm
+from SMC import version2_sm
 import string
 import generator
 import time
+import os
 
 
 class Version2:
@@ -13,6 +14,9 @@ class Version2:
         self._name = ''
         self.add = ''
         self._fsm.enterStartState()
+        self._result = {}
+        self._f = open(os.path.join(os.getcwd(), 'Task2', "result_2.txt"), 'w')
+        self._f1 = open(os.path.join(os.getcwd(), 'Task2', "result2.txt"), 'w')
 
     # Uncomment to see debug output.
     # self._fsm.setDebugFlag(True)
@@ -38,7 +42,24 @@ class Version2:
             else:
                 self._fsm.Unknown()
         self._fsm.EOS()
+        self.AddToDict(self.add)
+        self.writeFile(text)
         return self._is_acceptable
+
+    def writeFile(self, text):
+        if self._is_acceptable:
+            self._f.write(text + ' - yes '+'\n')
+        else:
+            self._f.write(text + ' - no ' + '\n')
+
+    def AddToDict(self, key):
+        if not self._is_acceptable:
+            return
+        if self._result.get(key) is None:
+            self._result[key]=1
+        else:
+            num = self._result.get(key)
+            self._result[key]=num+1
 
     def Acceptable(self):
         self._is_acceptable = True
@@ -83,9 +104,17 @@ class Version2:
     def nonZero(self):
         return self._counter != 0
 
+    def __del__(self):
+        self.saveRes()
+        self._f.close()
+        self._f1.close()
+
+    def saveRes(self):
+        for key, item in self._result.items():
+            self._f1.write(key + ' - ' + str(item)+'\n')
+
 
 if __name__ == '__main__':
-    f = open('result_2.txt','w')
     gen = generator.Generator()
     add = gen.getFileContent()
     check = Version2()
@@ -93,12 +122,8 @@ if __name__ == '__main__':
     n1 = time.perf_counter()
     for i in range(len(add)):
         t = check.CheckString(add[i])
-        print(i, t)
         if t:
-            f.write(add[i]+' - yes '+'\n')
             k += 1
-        else:
-            f.write(add[i] + ' - no ' + '\n')
-    f.close()
+        print(i, t)
     n2 = time.perf_counter()
     print(n2-n1, k)

@@ -1,13 +1,15 @@
 import re
 import generator
 import time
+import os
 
 
 # mailto:[a-zA-Z0-9]+@[a-zA-Z0-9]+.[a-zA-Z]+(\?subject=[a-zA-Z0-9]{1,64})?
 
 class Recognizer:
     def __init__(self, strings):
-        self._f = open('result_1.txt', 'w')
+
+        self._f = open(os.path.join(os.getcwd(), 'Task1', "result_1.txt"), 'w')
         self.strings = strings
         self._result = {}
 
@@ -31,17 +33,17 @@ class Recognizer:
 
     def AddToDict(self, key):
         if self._result.get(key) is None:
-            self._result[key]=1
+            self._result[key] = 1
         else:
             num = self._result.get(key)
-            self._result[key]=num+1
+            self._result[key] = num+1
 
     def printDict(self):
         for key, item in self._result.items():
             print(key + ' - ' + str(item))
 
     def saveRes(self):
-        f = open('result1.txt', 'w')
+        f = open(os.path.join(os.getcwd(), 'Task1', "result1.txt"), 'w')
         for key, item in self._result.items():
             f.write(key + ' - ' + str(item)+'\n')
         f.close()
@@ -52,6 +54,6 @@ if __name__ == '__main__':
     addr = gen.getFileContent()
     rec = Recognizer(addr)
     rec.recognize()
-    #a = 'mailto:mnea29@viju1sp0nIQ9rB4m478eY738qsDPfZdWQr6xwbSWpTc91b7XmxBmkuXf59UDBWYE6iG5AP88MrHmkKi3Cr?sUbJECT=yFFJUqtYrEPfYP'
+    #a = 'mailto:dd124374s321@d.s,..dasd.ru'
     #print(re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:[a-zA-Z0-9]+@[a-zA-Z0-9]+[.][a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?',a))
-    #print(a[:119])
+
