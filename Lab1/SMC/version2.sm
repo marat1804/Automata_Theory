@@ -7,38 +7,38 @@
 %%
 // State		Transition		End State		Action(s)
 MailTo {
-				Letter(letter:string)[ctxt.lenMailTo()]		    nil 			{Memorise(letter); counterInc();}
-				Letter(letter:string)          Error           {Unacceptable();}
-				Colom[ctxt.checkMail()]			NameTo			{counterZero();}
+				Letter[ctxt.lenMailTo()]		    nil 			{counterInc();}
+				Letter          Error           {Unacceptable();}
+				Colom[ctxt.checkMail()]			NameTo			{clearMem();counterZero();}
 }
 
 NameTo {
-				Letter(letter:string)			nil 			{Memorise(letter);counterInc();}
-				Digit(letter:string)           nil             {Memorise(letter);counterInc();}
-				At[ctxt.nonZero()]               ServerName      {remName();counterZero();}
+				Letter		nil 			{counterInc();}
+				Digit          nil             {counterInc();}
+				At[ctxt.nonZero()]               ServerName      {remName();counterZero();clearMem();}
 }
 
 ServerName {
-                Letter(letter:string)          ServerName      {counterInc();}
-                Digit(letter:string)           ServerName      {counterInc();}
-                Dot[ctxt.nonZero()]             Zone            {counterZero();}
+                Letter          ServerName      {counterInc();}
+                Digit          ServerName      {counterInc();}
+                Dot[ctxt.nonZero()]             Zone            {counterZero();clearMem();}
 }
 
 Zone {
-                Letter(letter:string)          Zone            {counterInc();}
-                Digit(letter:string)           Error           {Unacceptable();}
-                Question[ctxt.nonZero()]         Subject         {counterZero();}
+                Letter        Zone            {counterInc();}
+                Digit         Error           {Unacceptable();}
+                Question[ctxt.nonZero()]         Subject         {counterZero();clearMem();}
                 EOS[ctxt.nonZero()]              OK              {Acceptable();}
 }
 
 Subject {
-                Letter(letter:string)          Subject         {Memorise(letter);}
-                Eq[ctxt.checkSubject()]        Text            {counterZero();}
+                Letter        Subject         {}
+                Eq[ctxt.checkSubject()]        Text            {counterZero();clearMem();}
 }
 
 Text {
-                Letter(letter:string)         Text             {counterInc();}
-                Digit(letter:string)         Text             {counterInc();}
+                Letter        Text             {counterInc();}
+                Digit         Text             {counterInc();}
                 EOS[ctxt.lenText()]             OK              {Acceptable();}
 }
 
@@ -47,8 +47,8 @@ OK {}
 Error {}
 
 Default {
-				Letter(letter:string)   		Error      		{Unacceptable();}
-				Digit(letter:string)   			Error 			{Unacceptable();}
+				Letter  		Error      		{Unacceptable();}
+				Digit 			Error 			{Unacceptable();}
 				Colom			Error			{Unacceptable();}
 				At              Error			{Unacceptable();}
 				Dot             Error           {Unacceptable();}

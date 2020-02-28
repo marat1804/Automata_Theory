@@ -20,7 +20,7 @@ class AppClassState(statemap.State):
     def Colom(self, fsm):
         self.Default(fsm)
 
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         self.Default(fsm)
 
     def Dot(self, fsm):
@@ -32,7 +32,7 @@ class AppClassState(statemap.State):
     def Eq(self, fsm):
         self.Default(fsm)
 
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         self.Default(fsm)
 
     def MailTo(self, fsm):
@@ -51,7 +51,7 @@ class AppClassState(statemap.State):
 
 class Map1_Default(AppClassState):
 
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -62,7 +62,7 @@ class Map1_Default(AppClassState):
             fsm.getState().Entry(fsm)
 
 
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -169,6 +169,7 @@ class Map1_MailTo(Map1_Default):
             fsm.getState().Exit(fsm)
             fsm.clearState()
             try:
+                ctxt.clearMem()
                 ctxt.counterZero()
             finally:
                 fsm.setState(Map1.NameTo)
@@ -176,13 +177,12 @@ class Map1_MailTo(Map1_Default):
         else:
             Map1_Default.Colom(self, fsm)
         
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         if ctxt.lenMailTo() :
             endState = fsm.getState()
             fsm.clearState()
             try:
-                ctxt.Memorise(letter)
                 ctxt.counterInc()
             finally:
                 fsm.setState(endState)
@@ -206,29 +206,28 @@ class Map1_NameTo(Map1_Default):
             try:
                 ctxt.remName()
                 ctxt.counterZero()
+                ctxt.clearMem()
             finally:
                 fsm.setState(Map1.ServerName)
                 fsm.getState().Entry(fsm)
         else:
             Map1_Default.At(self, fsm)
         
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         ctxt = fsm.getOwner()
         endState = fsm.getState()
         fsm.clearState()
         try:
-            ctxt.Memorise(letter)
             ctxt.counterInc()
         finally:
             fsm.setState(endState)
 
 
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         endState = fsm.getState()
         fsm.clearState()
         try:
-            ctxt.Memorise(letter)
             ctxt.counterInc()
         finally:
             fsm.setState(endState)
@@ -236,7 +235,7 @@ class Map1_NameTo(Map1_Default):
 
 class Map1_ServerName(Map1_Default):
 
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -254,13 +253,14 @@ class Map1_ServerName(Map1_Default):
             fsm.clearState()
             try:
                 ctxt.counterZero()
+                ctxt.clearMem()
             finally:
                 fsm.setState(Map1.Zone)
                 fsm.getState().Entry(fsm)
         else:
             Map1_Default.Dot(self, fsm)
         
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -273,7 +273,7 @@ class Map1_ServerName(Map1_Default):
 
 class Map1_Zone(Map1_Default):
 
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -297,7 +297,7 @@ class Map1_Zone(Map1_Default):
         else:
             Map1_Default.EOS(self, fsm)
         
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -315,6 +315,7 @@ class Map1_Zone(Map1_Default):
             fsm.clearState()
             try:
                 ctxt.counterZero()
+                ctxt.clearMem()
             finally:
                 fsm.setState(Map1.Subject)
                 fsm.getState().Entry(fsm)
@@ -330,26 +331,22 @@ class Map1_Subject(Map1_Default):
             fsm.clearState()
             try:
                 ctxt.counterZero()
+                ctxt.clearMem()
             finally:
                 fsm.setState(Map1.Text)
                 fsm.getState().Entry(fsm)
         else:
             Map1_Default.Eq(self, fsm)
         
-    def Letter(self, fsm, letter):
-        ctxt = fsm.getOwner()
+    def Letter(self, fsm):
         fsm.getState().Exit(fsm)
-        fsm.clearState()
-        try:
-            ctxt.Memorise(letter)
-        finally:
-            fsm.setState(Map1.Subject)
-            fsm.getState().Entry(fsm)
+        fsm.setState(Map1.Subject)
+        fsm.getState().Entry(fsm)
 
 
 class Map1_Text(Map1_Default):
 
-    def Digit(self, fsm, letter):
+    def Digit(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()
@@ -373,7 +370,7 @@ class Map1_Text(Map1_Default):
         else:
             Map1_Default.EOS(self, fsm)
         
-    def Letter(self, fsm, letter):
+    def Letter(self, fsm):
         ctxt = fsm.getOwner()
         fsm.getState().Exit(fsm)
         fsm.clearState()

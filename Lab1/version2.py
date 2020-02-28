@@ -9,7 +9,7 @@ class Version2:
 
     def __init__(self):
         self._fsm = version2_sm.AppClass_sm(self)
-        self._is_acceptable = False
+        self._is_acceptable = True
         self._counter = 0
         self._name = ''
         self.add = ''
@@ -25,10 +25,14 @@ class Version2:
         self._fsm.MailTo()
         text = text.lower()
         for c in text:
+            if not self._is_acceptable:
+                break
             if c in string.ascii_lowercase:
-                self._fsm.Letter(c)
+                self._name += c
+                self._fsm.Letter()
             elif c in string.digits:
-                self._fsm.Digit(c)
+                self._name += c
+                self._fsm.Digit()
             elif c == ':':
                 self._fsm.Colom()
             elif c == '@':
@@ -68,7 +72,7 @@ class Version2:
         self._is_acceptable = False
 
     def ClearSMC(self):
-        self._is_acceptable = False
+        self._is_acceptable = True
         self._counter = 0
         self._name = ''
         self.add = ''
@@ -87,16 +91,14 @@ class Version2:
         self._name = ''
         return t
 
+    def clearMem(self):
+        self._name =''
+
     def checkSubject(self):
         return self._name == 'subject'
 
-    def Memorise(self, letter):
-        if letter in string.ascii_lowercase or letter in string.digits:
-            self._name += letter
-
     def remName(self):
         self.add = self._name
-        self._name = ''
 
     def lenText(self):
         return 0 < self._counter <= 64
