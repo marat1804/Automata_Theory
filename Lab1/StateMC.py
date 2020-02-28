@@ -48,7 +48,7 @@ class Version2:
         self._fsm.EOS()
         self.AddToDict(self.add)
         self.writeFile(text)
-        return self._is_acceptable
+        return self._is_acceptable, self.add
 
     def writeFile(self, text):
         if self._is_acceptable:

@@ -20,24 +20,36 @@ class Recognizer:
         n = time.perf_counter()
         j = 0
         for i in range(len(self.strings)):
-            match = re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+\.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?', self.strings[i])
+            match = re.fullmatch(
+                r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+\.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?',
+                self.strings[i])
             if match is not None:
                 self.AddToDict(match[1])
                 j += 1
-                self._f.write(self.strings[i] + ' - yes'+'\n')
+                self._f.write(self.strings[i] + ' - yes' + '\n')
             else:
-                self._f.write(self.strings[i] + ' - no'+'\n')
+                self._f.write(self.strings[i] + ' - no' + '\n')
         n1 = time.perf_counter()
         self.printDict()
         self.saveRes()
-        print(n1-n, j)
+        print(n1 - n, j)
+
+    def recognise(self, inn):
+        match = re.fullmatch(
+            r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+\.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?',
+            inn)
+        if match is not None:
+            print('Good string')
+            print(match[1])
+        else:
+            print('Bad string')
 
     def AddToDict(self, key):
         if self._result.get(key) is None:
             self._result[key] = 1
         else:
             num = self._result.get(key)
-            self._result[key] = num+1
+            self._result[key] = num + 1
 
     def printDict(self):
         for key, item in self._result.items():
@@ -46,7 +58,7 @@ class Recognizer:
     def saveRes(self):
         f = open(os.path.join(os.getcwd(), 'Task1', "result1.txt"), 'w')
         for key, item in self._result.items():
-            f.write(key + ' - ' + str(item)+'\n')
+            f.write(key + ' - ' + str(item) + '\n')
         f.close()
 
 
@@ -55,6 +67,5 @@ if __name__ == '__main__':
     addr = gen.getFileContent()
     rec = Recognizer(addr)
     rec.recognize()
-    #a = 'MailTo:mnea@yluVHFmDqUZLdX9n3yjDfCZyESq5TYBbU16eCJXQDA0MOIeADEQzJOm4F.ILJMzZSscfjAxvBfZWhzzUfooHBLhHxtaBeJhCbqpTRHritafs'
-    #print(re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+[.][a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?', a))
-
+    # a = 'MailTo:mnea@yluVHFmDqUZLdX9n3yjDfCZyESq5TYBbU16eCJXQDA0MOIeADEQzJOm4F.ILJMzZSscfjAxvBfZWhzzUfooHBLhHxtaBeJhCbqpTRHritafs'
+    # print(re.fullmatch(r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+[.][a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?', a))
