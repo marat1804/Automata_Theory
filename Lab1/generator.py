@@ -54,7 +54,7 @@ class Generator:
     def name(self):
         name = ['n', 'a', 'm', 'e']
         random.shuffle(name)
-        return ''.join(name)+''.join(random.choices(string.digits, k=random.randint(-5,6)))
+        return ''.join(name)+''.join(random.choices('/_~',k=random.randint(-7,2)))+''.join(random.choices(string.digits, k=random.randint(-5,6)))
 
     def dogSign(self):
         if self.rand() > 0.4:
@@ -88,8 +88,8 @@ class Generator:
 
 
 if __name__ == '__main__':
-    #gen = Generator()
-    #gen.generateFile()
+    gen = Generator(200)
+    gen.generateFile()
     '''
     add = gen.getFileContent()
     a = []

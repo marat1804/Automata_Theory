@@ -63,8 +63,12 @@ class Recognizer:
 
 
 if __name__ == '__main__':
-    gen = generator.Generator()
+    gen = generator.Generator(200)
     addr = gen.getFileContent()
+    #f = open(os.path.join(os.getcwd(), 'PLY', "1.txt"), 'r')
+    #addr = f.read()
+    #addr = addr.split('\n')
+    #f.close()
     rec = Recognizer(addr)
     rec.recognize()
     # a = 'MailTo:mnea@yluVHFmDqUZLdX9n3yjDfCZyESq5TYBbU16eCJXQDA0MOIeADEQzJOm4F.ILJMzZSscfjAxvBfZWhzzUfooHBLhHxtaBeJhCbqpTRHritafs'
