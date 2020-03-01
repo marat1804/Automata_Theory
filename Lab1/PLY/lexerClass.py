@@ -5,11 +5,12 @@ import ply.lex as lex
 class MyLexer(object):
     states = (
         ('name', 'inclusive'),
-        ('tail', 'inclusive')
+        ('server', 'inclusive'),
+        ('subject', 'inclusive')
     )
 
     tokens = (
-        'MAILTO', 'NAME', 'SERVER', 'NL', 'ANY'
+        'MAILTO', 'NAME', 'SERVER', 'SUBJECT', 'NL', 'ANY'
     )
 
     def t_MAILTO(self, t):
@@ -25,20 +26,37 @@ class MyLexer(object):
 
     def t_name_NAME(self, t):
         r'([a-zA-Z0-9]+)'
-        t.lexer.begin('tail')
+        t.lexer.begin('server')
         return t
 
-    def t_tail_SERVER(self, t):
-        r'@[a-zA-Z0-9]+\.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?'
+    def t_server_SERVER(self, t):
+        r'@[a-zA-Z0-9]+\.[a-zA-Z]+[\?\\n]'
+        t.lexer.begin('subject')
+        return t
+
+    def t_subject_SUBJECT(self, t):
+        r'(?mi)subject=[a-zA-Z0-9]{1,64}'
         t.lexer.begin('INITIAL')
+        return t
+
+    def t_subject_NL(self, t):
+        r'(\n)'
+        t.lexer.lineno += len(t.value)
+        t.begin('INITIAL')
         return t
 
     def t_ANY(self,t):
         r'(.)'
         t.lexer.begin('INITIAL')
 
-    def t_tail_NL(self, t):
+    def t_server_NL(self, t):
         r'(\n)'
+        t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
+        return t
+
+    def t_name_ANY(self,t):
+        r'(.)'
         t.lexer.lineno += len(t.value)
         t.lexer.begin('INITIAL')
         return t
@@ -51,9 +69,13 @@ class MyLexer(object):
         print("Illegal character in NAME '%s'" % t.value[0])
         t.lexer.begin('INITIAL')
 
-    def t_tail_error(self, t):
+    def t_server_error(self, t):
         print("Illegal character in TAIL'%s'" % t.value[0])
         t.lexer.begin('INITIAL')
+
+    def t_subject_error(self, t):
+            print("Illegal character in TAIL'%s'" % t.value[0])
+            t.lexer.begin('INITIAL')
 
     def input(self, data):
         return self.lexer.input(data)
@@ -70,7 +92,7 @@ if __name__ == '__main__':
     add = f.read()
     f.close()
     lexer = MyLexer()
-    lexer.input('MAIlto:nmae@ZefofkpSb6QHKtFb0BWYrz2lPF9KP441jw20wi9QhEz8Mymdy4UAV14d9jG2Ajwk1QA9baqQSfmL0Y.VKwapLZbEvAro?sUBjEct=HBMA')
+    lexer.input('mAIltO:anme421Qc2icgOzsZ3h6Cu.QfVKtHRNcsDawFHUPsmAHXdq?subject=7tzveaMDBTKvnrEO0nWpFP2egl5EMeYJklAhBDSKrqiPkTRKCjJTZanBTMfAS96enmxV \n maiLtO:enam316119@hFM2Pc4LHIRF6sZWZnaZFstDNPf6Rg9Ih3zfRZKjG9xBZrzvIMJ5q.bs?subject=WVpiVHKuITUrX')
     #lexer.input('MAilTO:eanm89140@ssDUwdpcJCpUnAyOQEBwuirJMQoXYS.YEjDwjHGxqvSoTjtOLLrzdjPuuMFJdiMZpnfatGPCcBqSLLUqUnzPTyayVxH?subject=21710341519738066704318859566987860891621791630985757978783218')
     while True:
         tok = lexer.token()

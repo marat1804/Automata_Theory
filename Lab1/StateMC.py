@@ -117,14 +117,14 @@ class Version2:
 
 
 if __name__ == '__main__':
-    gen = generator.Generator()
+    gen = generator.Generator(200)
     add = gen.getFileContent()
     check = Version2()
     k = 0
     n1 = time.perf_counter()
     for i in range(len(add)):
         t = check.CheckString(add[i])
-        if t:
+        if t[0]:
             k += 1
         print(i, t)
     n2 = time.perf_counter()
