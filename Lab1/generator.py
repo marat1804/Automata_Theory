@@ -8,6 +8,10 @@ class Generator:
     def __init__(self, num=1000000):
         self._num = num
         self._f = open(os.path.join(os.getcwd(),'Mails',"addresses.txt"), 'r')
+        self._prob1 = 0.33
+        self._prob2 = 0.66
+        self._prob_half = 0.5
+        self._prob0 = 0.2
 
     def rand(self):
         return random.random()
@@ -26,15 +30,15 @@ class Generator:
     def generateString(self, a=-5, b=80):
         letters = random.randint(a, b)
         r = self.rand()
-        if r < 0.33:
+        if r < self._prob1:
             return ''.join(random.choices(string.ascii_letters + string.digits, k=letters))
-        elif r < 0.66:
+        elif r < self._prob2:
             return ''.join(random.choices(string.ascii_letters, k=letters))
         else:
             return ''.join(random.choices(string.digits, k=letters))
 
     def upper(self, string):
-        if self.rand() > 0.5:
+        if self.rand() > self._prob_half:
             return string
         else:
             a = []
@@ -46,7 +50,7 @@ class Generator:
             return ''.join(a)
 
     def mailto(self):
-        if self.rand() > 0.4:
+        if self.rand() > self._prob_half:
             return self.upper('mailto:')
         else:
             return ''
@@ -57,13 +61,13 @@ class Generator:
         return ''.join(name)+''.join(random.choices('/_~',k=random.randint(-7,2)))+''.join(random.choices(string.digits, k=random.randint(-5,6)))
 
     def dogSign(self):
-        if self.rand() > 0.4:
+        if self.rand() > self._prob_half:
             return '@'
         else:
             return ''
 
     def dot(self):
-        if self.rand() > 0.2:
+        if self.rand() > self._prob0:
             return '.'
         else:
             return ''
@@ -72,7 +76,7 @@ class Generator:
         text = self.generateString()
         if len(text) != 0:
             r = self.rand()
-            if r > 0.3:
+            if r > self._prob1:
                 text = self.upper('?subject=')+text
                 return text
             else:
@@ -88,7 +92,7 @@ class Generator:
 
 
 if __name__ == '__main__':
-    gen = Generator(200)
+    gen = Generator()
     gen.generateFile()
     '''
     add = gen.getFileContent()

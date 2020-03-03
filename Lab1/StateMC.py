@@ -28,11 +28,9 @@ class Version2:
             if not self._is_acceptable:
                 break
             if c in string.ascii_lowercase:
-                self._name += c
-                self._fsm.Letter()
+                self._fsm.Letter(c)
             elif c in string.digits:
-                self._name += c
-                self._fsm.Digit()
+                self._fsm.Digit(c)
             elif c == ':':
                 self._fsm.Colom()
             elif c == '@':
@@ -97,8 +95,12 @@ class Version2:
     def checkSubject(self):
         return self._name == 'subject'
 
+    def Memorise(self, letter):
+        self._name += letter
+
     def remName(self):
         self.add = self._name
+        self._name = ''
 
     def lenText(self):
         return 0 < self._counter <= 64

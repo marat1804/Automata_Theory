@@ -63,7 +63,7 @@ class Recognizer:
 
 
 if __name__ == '__main__':
-    gen = generator.Generator(200)
+    gen = generator.Generator()
     addr = gen.getFileContent()
     #f = open(os.path.join(os.getcwd(), 'PLY', "1.txt"), 'r')
     #addr = f.read()
