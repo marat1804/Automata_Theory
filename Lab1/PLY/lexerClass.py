@@ -4,9 +4,9 @@ import ply.lex as lex
 
 class MyLexer(object):
     states = (
-        ('name', 'inclusive'),
-        ('server', 'inclusive'),
-        ('subject', 'inclusive')
+        ('name', 'exclusive'),
+        ('server', 'exclusive'),
+        ('subject', 'exclusive')
     )
 
     tokens = (
@@ -17,16 +17,36 @@ class MyLexer(object):
         r'(?mi)^mailto:'
         if t.lexer.current_state() == 'INITIAL':
             t.lexer.begin('name')
+        else:
+            t.lexer.begin('INITIAL')
         return t
 
     def t_NL(self, t):
         r'(\n)'
         t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
+        return t
+
+    def t_ANY(self, t):
+        r'(.)'
+        t.lexer.begin('INITIAL')
         return t
 
     def t_name_NAME(self, t):
         r'([a-zA-Z0-9]+)'
         t.lexer.begin('server')
+        return t
+
+    def t_name_NL(self, t):
+        r'(\n)'
+        t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
+        return t
+
+    def t_name_ANY(self,t):
+        r'(.)'
+        t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
         return t
 
     def t_server_SERVER(self, t):
@@ -45,18 +65,8 @@ class MyLexer(object):
         t.lexer.begin('INITIAL')
         return t
 
-    def t_ANY(self,t):
-        r'(.)'
-        t.lexer.begin('INITIAL')
-
     def t_server_NL(self, t):
         r'(\n)'
-        t.lexer.lineno += len(t.value)
-        t.lexer.begin('INITIAL')
-        return t
-
-    def t_name_ANY(self,t):
-        r'(.)'
         t.lexer.lineno += len(t.value)
         t.lexer.begin('INITIAL')
         return t
@@ -82,12 +92,12 @@ class MyLexer(object):
         t.lexer.begin('INITIAL')
 
     def t_server_error(self, t):
-        print("Illegal character in TAIL'%s'" % t.value[0])
+        print("Illegal character in SERVER'%s'" % t.value[0])
         t.lexer.begin('INITIAL')
 
     def t_subject_error(self, t):
-            print("Illegal character in TAIL'%s'" % t.value[0])
-            t.lexer.begin('INITIAL')
+        print("Illegal character in SUBJECT'%s'" % t.value[0])
+        t.lexer.begin('INITIAL')
 
     def input(self, data):
         return self.lexer.input(data)

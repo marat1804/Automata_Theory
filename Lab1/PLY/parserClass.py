@@ -26,9 +26,14 @@ class MyParser(object):
             self._f.close()
         return result
 
+    def p_addr_list(self, p):
+        """addr_list : addr
+        | addr_list addr"""
+
     def p_addr_4(self, p):
-        """addr : MAILTO NAME SERVER """
-        print('addr_4')
+        """addr : MAILTO NAME SERVER NL
+        | MAILTO NAME SERVER SUBJECT NL"""
+        print('addr_'+str(self.count))
         if self._file:
             self._f.write(p[1]+p[2]+p[3] + ' - yes\n')
         if self.a.get(p[2]) is None:
@@ -36,9 +41,9 @@ class MyParser(object):
         else:
             self.a[p[2]] += 1
         self.count += 1
-
+    '''
     def p_addr_3(self, p):
-        """addr : MAILTO NAME SERVER SUBJECT """
+        """addr : MAILTO NAME SERVER SUBJECT NL"""
         print('addr_3')
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + p[4] +' - yes\n')
@@ -47,7 +52,7 @@ class MyParser(object):
         else:
             self.a[p[2]] += 1
         self.count += 1
-    '''
+        
     def p_addr_2(self, p):
         """addr : NL MAILTO NAME SERVER"""
         print('addr_2')
@@ -93,53 +98,44 @@ class MyParser(object):
         self.count += 1
     '''
     def p_addr_zero_err_type(self, p):
-        """addr : err_list """
-        print('arr_err_0')
+        """addr : err_list NL"""
         #if self._file:
             #self._f.write(p[1] + ' - no\n')
 
     def p_addr_third_err_type(self,p):
-        """addr : MAILTO err_list """
-        print('arr_err_3')
+        """addr : MAILTO err_list NL"""
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
     def p_addr_first_err_type(self, p):
-        """addr : MAILTO NAME err_list"""
-        print('arr_err_1')
+        """addr : MAILTO NAME err_list NL"""
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
     def p_addr_second_err_type(self,p):
-        """addr : MAILTO NAME SERVER err_list"""
-        print('arr_err_2')
+        """addr : MAILTO NAME SERVER err_list NL"""
+        if self._file:
+            self._f.write(p[1] + p[2] + p[3] + ' - no\n')
+
+    def p_addr_forth_err_type(self,p):
+        """addr : MAILTO NAME SERVER SUBJECT err_list NL"""
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
     def p_err_list_type3(self, p):
         """err_list : err_list err """
-        print('error_3')
         p[0] = p[1]
         p[0] += p[2]
 
     def p_err_list_type2(self, p):
         """err_list : """
-        print('error_3')
-        p[0] = p[1]
-        p[0] += p[2]
 
     def p_err_list_type1(self, p):
         """err_list : err"""
-        print('error_1')
         p[0] = p[1]
 
-    def p_err_list_type0(self, p):
-        """err_list : NL"""
-        print('error_0')
-        p[0] = p[1]
-
-    def p_err(self, p):
-        """err : ANY"""
+    def p_err_1(self, p):
+        """err : ANY """
         p[0] = p[1]
 
     def p_error(self, p):
