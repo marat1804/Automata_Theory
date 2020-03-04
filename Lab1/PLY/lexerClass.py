@@ -30,19 +30,19 @@ class MyLexer(object):
         return t
 
     def t_server_SERVER(self, t):
-        r'@[a-zA-Z0-9]+\.[a-zA-Z]+[\?\\n]'
+        r'@[a-zA-Z0-9]+\.[a-zA-Z]+'
         t.lexer.begin('subject')
         return t
 
     def t_subject_SUBJECT(self, t):
-        r'(?mi)subject=[a-zA-Z0-9]{1,64}'
+        r'(?i)\?subject=[a-zA-Z0-9]{1,64}'
         t.lexer.begin('INITIAL')
         return t
 
     def t_subject_NL(self, t):
         r'(\n)'
         t.lexer.lineno += len(t.value)
-        t.begin('INITIAL')
+        t.lexer.begin('INITIAL')
         return t
 
     def t_ANY(self,t):
@@ -56,6 +56,18 @@ class MyLexer(object):
         return t
 
     def t_name_ANY(self,t):
+        r'(.)'
+        t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
+        return t
+
+    def t_server_ANY(self,t):
+        r'(.)'
+        t.lexer.lineno += len(t.value)
+        t.lexer.begin('INITIAL')
+        return t
+
+    def t_subject_ANY(self, t):
         r'(.)'
         t.lexer.lineno += len(t.value)
         t.lexer.begin('INITIAL')
@@ -88,11 +100,11 @@ class MyLexer(object):
 
 
 if __name__ == '__main__':
-    f = open('1.txt', 'r')
+    f = open('2.txt', 'r')
     add = f.read()
     f.close()
     lexer = MyLexer()
-    lexer.input('mAIltO:anme421Qc2icgOzsZ3h6Cu.QfVKtHRNcsDawFHUPsmAHXdq?subject=7tzveaMDBTKvnrEO0nWpFP2egl5EMeYJklAhBDSKrqiPkTRKCjJTZanBTMfAS96enmxV \n maiLtO:enam316119@hFM2Pc4LHIRF6sZWZnaZFstDNPf6Rg9Ih3zfRZKjG9xBZrzvIMJ5q.bs?subject=WVpiVHKuITUrX')
+    lexer.input(add)
     #lexer.input('MAilTO:eanm89140@ssDUwdpcJCpUnAyOQEBwuirJMQoXYS.YEjDwjHGxqvSoTjtOLLrzdjPuuMFJdiMZpnfatGPCcBqSLLUqUnzPTyayVxH?subject=21710341519738066704318859566987860891621791630985757978783218')
     while True:
         tok = lexer.token()

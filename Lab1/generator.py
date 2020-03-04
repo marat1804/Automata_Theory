@@ -92,7 +92,7 @@ class Generator:
 
 
 if __name__ == '__main__':
-    gen = Generator()
+    gen = Generator(10000)
     gen.generateFile()
     '''
     add = gen.getFileContent()

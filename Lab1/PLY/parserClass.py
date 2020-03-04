@@ -26,13 +26,9 @@ class MyParser(object):
             self._f.close()
         return result
 
-    #def p_addr_list(self, p):
-       # """addr_list : addr
-       # | addr_list addr """
-
-    def p_addr_1(self, p):
-        """addr : MAILTO NAME SERVER SUBJECT"""
-        print('addr_1')
+    def p_addr_4(self, p):
+        """addr : MAILTO NAME SERVER """
+        print('addr_4')
         if self._file:
             self._f.write(p[1]+p[2]+p[3] + ' - yes\n')
         if self.a.get(p[2]) is None:
@@ -41,10 +37,43 @@ class MyParser(object):
             self.a[p[2]] += 1
         self.count += 1
 
+    def p_addr_3(self, p):
+        """addr : MAILTO NAME SERVER SUBJECT """
+        print('addr_3')
+        if self._file:
+            self._f.write(p[1] + p[2] + p[3] + p[4] +' - yes\n')
+        if self.a.get(p[2]) is None:
+            self.a.setdefault(p[2], 1)
+        else:
+            self.a[p[2]] += 1
+        self.count += 1
+    '''
     def p_addr_2(self, p):
-        """addr : MAILTO NAME SERVER"""
+        """addr : NL MAILTO NAME SERVER"""
         print('addr_2')
         if self._file:
+            self._f.write(p[2]+p[3]+p[4] + ' - yes\n')
+        if self.a.get(p[3]) is None:
+            self.a.setdefault(p[3],1)
+        else:
+            self.a[p[3]] += 1
+        self.count += 1
+
+    def p_addr_1(self, p):
+        """addr : NL MAILTO NAME SERVER SUBJECT"""
+        print('addr_1')
+        if self._file:
+            self._f.write(p[2] + p[3] + p[4] +p[5] + ' - yes\n')
+        if self.a.get(p[3]) is None:
+            self.a.setdefault(p[3], 1)
+        else:
+            self.a[p[3]] += 1
+        self.count += 1
+
+    def p_addr_5(self, p):
+        """addr : MAILTO NAME SERVER NL"""
+        print('addr_5')
+        if self._file:
             self._f.write(p[1]+p[2]+p[3] + ' - yes\n')
         if self.a.get(p[2]) is None:
             self.a.setdefault(p[2],1)
@@ -52,39 +81,52 @@ class MyParser(object):
             self.a[p[2]] += 1
         self.count += 1
 
-    def p_addr_zero_err_type(self, p):
-        """addr : err_list NL"""
-        print('arr_err_0')
+    def p_addr_6(self, p):
+        """addr :  MAILTO NAME SERVER SUBJECT NL"""
+        print('addr_6')
         if self._file:
-            self._f.write(p[1] + ' - no\n')
+            self._f.write(p[1] + p[2] + p[3] +p[4] + ' - yes\n')
+        if self.a.get(p[2]) is None:
+            self.a.setdefault(p[2], 1)
+        else:
+            self.a[p[2]] += 1
+        self.count += 1
+    '''
+    def p_addr_zero_err_type(self, p):
+        """addr : err_list """
+        print('arr_err_0')
+        #if self._file:
+            #self._f.write(p[1] + ' - no\n')
+
+    def p_addr_third_err_type(self,p):
+        """addr : MAILTO err_list """
+        print('arr_err_3')
+        if self._file:
+            self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
     def p_addr_first_err_type(self, p):
-        """addr : MAILTO NAME NL"""
+        """addr : MAILTO NAME err_list"""
         print('arr_err_1')
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
     def p_addr_second_err_type(self,p):
-        """addr : MAILTO NAME err_list NL"""
+        """addr : MAILTO NAME SERVER err_list"""
         print('arr_err_2')
         if self._file:
             self._f.write(p[1] + p[2] + p[3] + ' - no\n')
 
-    def p_addr_third_err_type(self,p):
-        """addr : MAILTO err_list NL"""
-        print('arr_err_3')
-        if self._file:
-            self._f.write(p[1] + p[2] + p[3] + ' - no\n')
-
     def p_err_list_type3(self, p):
-        """err_list : err_list err"""
+        """err_list : err_list err """
         print('error_3')
         p[0] = p[1]
         p[0] += p[2]
 
     def p_err_list_type2(self, p):
         """err_list : """
-        print('error_2')
+        print('error_3')
+        p[0] = p[1]
+        p[0] += p[2]
 
     def p_err_list_type1(self, p):
         """err_list : err"""
@@ -109,7 +151,7 @@ if __name__ == '__main__':
     add = f.read()
     #print(add)
     f.close()
-    parser = MyParser(True)
-    print(parser.check_string('mAIltO:anme421Qc2icgOzsZ3h6Cu.QfVKtHRNcsDawFHUPsmAHXdq?subject=7tzveaMDBTKvnrEO0nWpFP2egl5EMeYJklAhBDSKrqiPkTRKCjJTZanBTMfAS96enmxV \n maiLtO:enam316119@hFM2Pc4LHIRF6sZWZnaZFstDNPf6Rg9Ih3zfRZKjG9xBZrzvIMJ5q.bs?subject=WVpiVHKuITUrX'))
-    print(parser.count)
+    parser = MyParser()
+    print(parser.check_string(add))
+    #print(parser.check_string('mailto:eman620@NJxvCqeazvWClhtnrjFJOEQvNkGIJFWfabVDxcEDVuwiBKfJJZxiwzzkErXeLhz.kddsIKinJlcuUWTQSLtljuJLHGeovwAooKpLQBuhWCbahLlKzEJWerljGoCf'))
     print(parser.a)

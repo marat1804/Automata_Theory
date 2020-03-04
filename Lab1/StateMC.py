@@ -119,7 +119,7 @@ class Version2:
 
 
 if __name__ == '__main__':
-    gen = generator.Generator(200)
+    gen = generator.Generator()
     add = gen.getFileContent()
     check = Version2()
     k = 0
