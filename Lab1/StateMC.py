@@ -113,9 +113,25 @@ class Version2:
         self._f.close()
         self._f1.close()
 
+    def printDict(self):
+        for key, item in self._result.items():
+            print(key + ' - ' + str(item))
+
     def saveRes(self):
         for key, item in self._result.items():
             self._f1.write(key + ' - ' + str(item)+'\n')
+        self.null()
+
+    def saveTime(self, time, number):
+        f = open(os.path.join(os.getcwd(), 'Task2', "time2.txt"), 'w')
+        f.write(str(time)+'\n')
+        f.write(str(number))
+        f.close()
+        self.null()
+
+    def null(self):
+        self._result ={}
+
 
 
 if __name__ == '__main__':

@@ -32,6 +32,7 @@ class Recognizer:
         n1 = time.perf_counter()
         self.printDict()
         self.saveRes()
+        self.saveTime(n1-n, j)
         print(n1 - n, j)
 
     def recognise(self, inn):
@@ -39,8 +40,9 @@ class Recognizer:
             r'[mM][aA][iI][Ll][Tt][Oo]:([a-zA-Z0-9]+)@[a-zA-Z0-9]+\.[a-zA-Z]+(\?[Ss][Uu][Bb][Jj][eE][cC][Tt]=[a-zA-Z0-9]{1,64})?',
             inn)
         if match is not None:
+            self.AddToDict(match[1])
             print('Good string')
-            print(match[1])
+            #print(match[1])
         else:
             print('Bad string')
 
@@ -60,6 +62,17 @@ class Recognizer:
         for key, item in self._result.items():
             f.write(key + ' - ' + str(item) + '\n')
         f.close()
+        self.null()
+
+    def saveTime(self, time, number):
+        f = open(os.path.join(os.getcwd(), 'Task1', "time1.txt"), 'w')
+        f.write(str(time)+'\n')
+        f.write(str(number))
+        f.close()
+        self.null()
+
+    def null(self):
+        self._result ={}
 
 
 if __name__ == '__main__':
