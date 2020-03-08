@@ -90,6 +90,10 @@ class Generator:
         del add[self._num]
         return add
 
+    def getFile(self):
+        add = self._f.read()
+        return add
+
 
 if __name__ == '__main__':
     gen = Generator()
